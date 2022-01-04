@@ -106,18 +106,9 @@ main() {
             -I./rtl\
             ./rtl/chacha_quarter_round.sv\
             ./rtl/chacha_pipeline.sv\
-            --top-module chacha_quarter_round
-
-        printinfo "Start Verilator lint"
-        verilator --lint-only +1800-2017ext+sv \
-            -Wall -Wpedantic -cdc \
-            -Wno-VARHIDDEN \
-            -Wno-PINCONNECTEMPTY \
-            -Wno-TIMESCALEMOD \
-            -I./rtl\
-            ./rtl/chacha_quarter_round.sv\
-            ./rtl/chacha_pipeline.sv\
-            --top-module chacha_quarter_round
+            ./rtl/chacha_block_function.sv\
+            ./rtl/chacha_apb.sv\
+            --top-module chacha_block_function
 
         set -e
     fi

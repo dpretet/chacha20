@@ -9,7 +9,7 @@ module chacha_pipeline
     #(
         // Bus width in bits
         parameter DATA_BUS_W = 8,
-        // Number of pipeline stage
+        // Number of pipeline stage [0:N]
         parameter NB_PIPELINE = 1
     )(
         input  logic                      aclk,
@@ -58,7 +58,7 @@ module chacha_pipeline
         logic                      pipe_ready;
         logic [DATA_BUS_W    -1:0] pipe_data;
 
-        axicb_pipeline
+        chacha_pipeline
         #(
             .DATA_BUS_W  (DATA_BUS_W),
             .NB_PIPELINE (1)
@@ -76,7 +76,7 @@ module chacha_pipeline
             .o_data  (pipe_data)
         );
 
-        axicb_pipeline
+        chacha_pipeline
         #(
             .DATA_BUS_W  (DATA_BUS_W),
             .NB_PIPELINE (NB_PIPELINE-1)

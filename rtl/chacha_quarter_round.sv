@@ -4,7 +4,7 @@
 `timescale 1 ns / 1 ps
 `default_nettype none
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //
 // From https://datatracker.ietf.org/doc/html/rfc8439:
 //
@@ -28,16 +28,16 @@
 //   b = b ^ c = 0x01020304 ^ 0x789abcde = 0x7998bfda
 //   b = b <<< 7 = 0x7998bfda <<< 7 = 0xcc5fed3c
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////
+// ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 module chacha_quarter_round
 
     #(
-    // Activate pipeline stages:
-    //  - bit 0 : after the last stage, on output (c += d; b ^= c; b <<<= 7)
-    //  - bit 1 : after the third stage (a += b; d ^= a; d <<<= 8)
-    //  - bit 2 : after the second stage (c += d; b ^= c; b <<<= 12)
-    //  - bit 3 : after the first stage (a += b; d ^= a; d <<<= 16)
+        // Activate the pipeline stages:
+        //  - bit 0 : after the last stage, on output (c += d; b ^= c; b <<<= 7)
+        //  - bit 1 : after the third stage (a += b; d ^= a; d <<<= 8)
+        //  - bit 2 : after the second stage (c += d; b ^= c; b <<<= 12)
+        //  - bit 3 : after the first stage (a += b; d ^= a; d <<<= 16)
         parameter [3:0] PIPELINE = 0
     ) (
         // Global interface
@@ -60,9 +60,9 @@ module chacha_quarter_round
         output logic [31:0] o_d
     );
 
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
     // Local variables
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
 
     logic [31:0] stg0_a;
     logic [31:0] stg0_b;
@@ -85,9 +85,9 @@ module chacha_quarter_round
     logic [31:0] stg3_c;
     logic [31:0] stg3_d;
 
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
     // First stage
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
 
     assign stg0_a = i_a + i_b;
     assign stg0_b = i_b;
@@ -95,9 +95,9 @@ module chacha_quarter_round
     assign stg0_d_t = i_d ^ stg0_a;
     assign stg0_d = {stg0_d_t[15:0], stg0_d_t[31:16]};
 
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
     // Second stage
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
 
     assign stg1_a = stg0_a;
     assign stg1_b_t = stg0_b ^ stg1_c;
@@ -105,9 +105,9 @@ module chacha_quarter_round
     assign stg1_c = stg0_c + stg0_d;
     assign stg1_d = stg0_d;
 
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
     // Third stage
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
 
     assign stg2_a = stg1_a + stg1_b;
     assign stg2_b = stg1_b;
@@ -115,19 +115,19 @@ module chacha_quarter_round
     assign stg2_d_t = stg1_d ^ stg2_a;
     assign stg2_d = {stg2_d_t[23:0], stg2_d_t[31:24]};
 
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
     // Fourth stage
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
 
     assign stg3_a = stg2_a;
     assign stg3_b_t = stg2_b ^ stg3_c;
-    assign stg3_b = {stg3_b_t[6:0],stg3_b_t[31:7]};
+    assign stg3_b = {stg3_b_t[24:0],stg3_b_t[31:25]};
     assign stg3_c = stg2_c + stg2_d;
     assign stg3_d = stg2_d;
 
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
     // Output pipeline stage
-    //:::::::::::::::::::::::::::::::
+    // ::::::::::::::::::::::::::::::
 
     chacha_pipeline
     #(

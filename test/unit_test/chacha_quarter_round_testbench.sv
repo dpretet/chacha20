@@ -53,10 +53,10 @@ module chacha_quarter_round_testbench();
     always #2 aclk = ~aclk;
 
     // To dump data for visualization:
-    // initial begin
-    //     $dumpfile("chacha_quarter_round_testbench.vcd");
-    //     $dumpvars(0, chacha_quarter_round_testbench);
-    // end
+    initial begin
+        $dumpfile("chacha_quarter_round_testbench.vcd");
+        $dumpvars(0, chacha_quarter_round_testbench);
+    end
 
     // Setup time format when printing with $realtime
     initial $timeformat(-9, 1, "ns", 8);
@@ -65,8 +65,11 @@ module chacha_quarter_round_testbench();
     begin
         aresetn = 1'b0;
         srst = 1'b0;
+        i_valid = 1'b0;
+        o_ready = 1'b0;
         #10;
         aresetn = 1'b1;
+        o_ready = 1'b1;
     end
     endtask
 
@@ -101,15 +104,16 @@ module chacha_quarter_round_testbench();
     `UNIT_TEST("TEST_VECTOR")
 
         @(posedge aclk);
-        i_a = 32'h516461b1;
-        i_b = 32'h2a5f714c;
+        i_valid = 1'b1;
+        i_a = 32'h516461B1;
+        i_b = 32'h2A5F714C;
         i_c = 32'h53372767;
-        i_d = 32'h3d631689;
+        i_d = 32'h3D631689;
         @(posedge aclk);
-        `ASSERT(o_a==32'hBDB886DC);
-        `ASSERT(o_b==32'hCFACAFD2);
-        `ASSERT(o_c==32'hE46BEA80);
-        `ASSERT(o_d==32'hCCC07C79);
+        `ASSERT((o_a==32'hBDB886DC), "A doesn't match expected value");
+        `ASSERT((o_b==32'hCFACAFD2), "B doesn't match expected value");
+        `ASSERT((o_c==32'hE46BEA80), "C doesn't match expected value");
+        `ASSERT((o_d==32'hCCC07C79), "D doesn't match expected value");
 
     `UNIT_TEST_END
 

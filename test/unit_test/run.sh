@@ -12,11 +12,18 @@ svutRun -test ./chacha_quarter_round_testbench.sv -f files.f -I ../../rtl | tee 
 ret=$?
 
 if [[ $ret != 0 ]]; then
-    echo "Execution of core testsuite failed"
+    echo "Execution of quarter round testsuite failed"
     exit 1
 fi
 
-ec=$(grep -c "ERROR:" log)
+svutRun -test ./chacha_block_function_testbench.sv -f files.f -I ../../rtl | tee -a chacha.log
+ret=$?
+
+if [[ $ret != 0 ]]; then
+    echo "Execution of block function testsuite failed"
+    exit 1
+fi
+ec=$(grep -c "ERROR:" chacha.log)
 
 if [[ $ec != 0 ]]; then
     echo "Execution suffered $ec issues"
